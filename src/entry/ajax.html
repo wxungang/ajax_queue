@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>ajax created by xiaogang on 2018/10/18</title>
+    <!--<link type="text/css" rel="stylesheet" href="./ajax.css"/>-->
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+<header>ajax</header>
+</body>
+<script type="text/javascript" src="../libs/zepto.js"></script>
+<script type="text/javascript" src="../libs/axios.js"></script>
+<script type="text/javascript" src="../service/ajax.js"></script>
+
+<script type="text/javascript">
+    personal.ajax.ajax({
+        url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+        callback: function (data, code, msg) {
+            console.log(data);
+        }
+    })
+
+</script>
+</html>
