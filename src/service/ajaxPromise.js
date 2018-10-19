@@ -53,10 +53,10 @@ function axiosAjax(params, isPromise = true) {
 
     return axios(_config).then((res = {}) => {
         // return isPromise ? res.data : void params.callback(res.data, 100, 'ok');
-        return params.resolve(res.data);
+        params.resolve(res.data);
     }).catch((err = {}) => {
         // return isPromise ? err : void params.callback(err, 0, 'err');
-        return params.reject(err);
+        params.reject(err);
     })
 }
 
