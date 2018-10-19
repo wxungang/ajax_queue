@@ -14,30 +14,42 @@
 </body>
 <script type="text/javascript" src="../libs/zepto.js"></script>
 <script type="text/javascript" src="../libs/axios.js"></script>
-<script type="text/javascript" src="../service/ajax.js"></script>
+<!--<script type="text/javascript" src="../service/ajax.js"></script>-->
+<script type="text/javascript" src="../service/ajaxPromise.js"></script>
 
 <script type="text/javascript">
-    personal.ajax._ajax({
-        url: 'https://api.github.com/repos/axios/axios/git/trees/master',
-        callback: function (data, code, msg) {
-            console.log(`zepto callback res ${code}`);
-            console.log(data);
-        }
-    })
+    (function () {
+        // personal.ajax._ajax({
+        //     url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+        //     callback: function (data, code, msg) {
+        //         console.log(`zepto callback res ${code}`);
+        //         console.log(data);
+        //     }
+        // });
+        //
+        //
+        // personal.ajax.axiosCallback({
+        //     url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+        //     callback: function (data, code, msg) {
+        //         console.log(`axios callback res ${code}`);
+        //         console.log(data);
+        //     }
+        // });
+    })();
 
+    (() => {
 
-    personal.ajax.ajax({
-        url: 'https://api.github.com/repos/axios/axios/git/trees/master',
-        callback: function (data, code, msg) {
-            console.log(`axios callback res ${code}`);
+        personal.ajax.ajax({
+            url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+        }).then((data = {}) => {
+            console.log(`axios promise res`)
             console.log(data);
-        }
-    }).then((data = {}) => {
-        console.log(`axios promise res`)
-        console.log(data);
-    }, (err = {}) => {
-        console.log(`axios promise err`)
-        console.log(err);
-    })
+        }, (err = {}) => {
+            console.log(`axios promise err`)
+            console.log(err);
+        })
+
+    })()
+
 </script>
 </html>

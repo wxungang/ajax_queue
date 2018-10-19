@@ -7,47 +7,36 @@
 window.personal = window.personal || {};
 personal.ajax = personal.ajax || {};
 
-let ajaxQueue = [];
-let promiseQueue = [];
+let promiseAjaxQueue = [];
 let flag = false;
 
 (function () {
     let _this = this;
-    //传统的 callback 模式 队列实现很简单
-    this._ajax = function (params) {
+
+
+    this.ajax = function (params) {
         if (!flag) {
-            ajaxQueue.push(params);
-            return;
-        }
 
-        $.ajax({
-            type: params.type || 'get',
-            url: params.url,
-            data: params.data || {},
-            success: function (data, status, xhr) {
-                params.callback(data, status, xhr);
-            },
-            error: function (xhr, errorType, error) {
-                params.callback(xhr, errorType, error);
-            }
-        })
-    }
-
-
-    this.axiosCallback = function (params) {
-        if (!flag) {
-            promiseQueue.push(params);
+            return new Promise((resolve, reject) => {
+                let _params = Object.assign({resolve, reject}, params)
+                promiseAjaxQueue.push(_params);
+            })
 
         } else {
-            return axiosAjax(params, false)
+            return axiosAjax(params)
         }
-
 
     }
 
 }).call(personal.ajax);
 
 
+/**
+ *
+ * @param params
+ * @param isPromise
+ * @returns {Promise<T>}
+ */
 function axiosAjax(params, isPromise = true) {
     params.type = params.type || 'get';
     // get/post 字段不一样！
@@ -63,26 +52,30 @@ function axiosAjax(params, isPromise = true) {
     }, _data);
 
     return axios(_config).then((res = {}) => {
-        return isPromise ? res.data : void params.callback(res.data, 100, 'ok');
+        // return isPromise ? res.data : void params.callback(res.data, 100, 'ok');
+        return params.resolve(res.data);
     }).catch((err = {}) => {
-        return isPromise ? Promise.reject(err) : void params.callback(err, 0, 'err');
+        // return isPromise ? err : void params.callback(err, 0, 'err');
+        return params.reject(err);
     })
 }
 
+/**
+ *
+ */
 let timerClose = _timer(function () {
     console.log('------timer-----')
-    if (ajaxQueue.length) {
-        console.log('flag=>' + flag)
-        personal.ajax._ajax(ajaxQueue.shift());
+    if (promiseAjaxQueue.length) {
+        console.log('flag=>' + flag);
 
-        personal.ajax.axiosCallback(promiseQueue.shift());
+        personal.ajax.ajax(promiseAjaxQueue.shift());
     }
 }, 100);
 
 
 setTimeout(function () {
     flag = true;
-    console.log('------flag-----');
+    console.log('------flag-----')
     timerClose();
 }, 1500);
 
