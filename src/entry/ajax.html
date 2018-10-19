@@ -15,28 +15,30 @@
 <script type="text/javascript" src="../libs/zepto.js"></script>
 <script type="text/javascript" src="../libs/axios.js"></script>
 <!--<script type="text/javascript" src="../service/ajax.js"></script>-->
-<script type="text/javascript" src="../service/ajaxPromise.js"></script>
+<!--<script type="text/javascript" src="../service/ajaxPromise.js"></script>-->
+<script type="text/javascript" src="../service/ajaxMixins.js"></script>
 
 <script type="text/javascript">
     (function () {
-        // personal.ajax._ajax({
-        //     url: 'https://api.github.com/repos/axios/axios/git/trees/master',
-        //     callback: function (data, code, msg) {
-        //         console.log(`zepto callback res ${code}`);
-        //         console.log(data);
-        //     }
-        // });
-        //
-        //
-        // personal.ajax.axiosCallback({
-        //     url: 'https://api.github.com/repos/axios/axios/git/trees/master',
-        //     callback: function (data, code, msg) {
-        //         console.log(`axios callback res ${code}`);
-        //         console.log(data);
-        //     }
-        // });
-    })();
+        personal.ajax._ajax({
+            url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+            callback: function (data, code, msg) {
+                console.log(`zepto callback res ${code}`);
+                console.log(data);
+            }
+        });
 
+
+        personal.ajax.axiosCallback({
+            url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+            callback: function (data, code, msg) {
+                console.log(`axios callback res ${code}`);
+                console.log(data);
+            }
+        });
+    });
+
+    //promise then
     (() => {
 
         personal.ajax.ajax({
@@ -49,7 +51,56 @@
             console.log(err);
         })
 
-    })()
+    });
+
+    //mixins
+    (() => {
+        //just promise
+        personal.ajax.ajax({
+            flag: true, //not for queue
+            async: true,//promise mode
+            url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+        }).then((data = {}) => {
+            console.log(`axios promise res for just promise`)
+            console.log(data);
+        }, (err = {}) => {
+            console.log(`axios promise err for just promise`)
+            console.log(err);
+        })
+
+        personal.ajax.ajax({
+            flag: true, //not for queue
+            async: false,//callback mode
+            url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+            callback: function (data, code, msg) {
+                console.log(`axios callback res ${code}  for just promise`);
+                console.log(data);
+            }
+        })
+
+        personal.ajax.ajax({
+            flag: false, //for queue
+            async: false,//callback mode
+            url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+            callback: function (data, code, msg) {
+                console.log(`axios callback res ${code}  for queue`);
+                console.log(data);
+            }
+        })
+
+        // promise queue
+        personal.ajax.ajax({
+            flag: false, //for queue
+            url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+        }).then((data = {}) => {
+            console.log(`axios promise res for queue`)
+            console.log(data);
+        }, (err = {}) => {
+            console.log(`axios promise err for queue`)
+            console.log(err);
+        })
+
+    })();
 
 </script>
 </html>
