@@ -17,12 +17,27 @@
 <script type="text/javascript" src="../service/ajax.js"></script>
 
 <script type="text/javascript">
-    personal.ajax.ajax({
+    personal.ajax._ajax({
         url: 'https://api.github.com/repos/axios/axios/git/trees/master',
         callback: function (data, code, msg) {
+            console.log(`zepto callback res ${code}`);
             console.log(data);
         }
     })
 
+
+    personal.ajax.ajax({
+        url: 'https://api.github.com/repos/axios/axios/git/trees/master',
+        callback: function (data, code, msg) {
+            console.log(`axios callback res ${code}`);
+            console.log(data);
+        }
+    }).then((data = {}) => {
+        console.log(`axios promise res`)
+        console.log(data);
+    }, (err = {}) => {
+        console.log(`axios promise err`)
+        console.log(err);
+    })
 </script>
 </html>

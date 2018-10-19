@@ -8,12 +8,13 @@ window.personal = window.personal || {};
 personal.ajax = personal.ajax || {};
 
 let ajaxQueue = [];
+let promiseQueue = {};
 let flag = false;
 
 (function () {
     let _this = this;
 
-    this.ajax = function (params) {
+    this._ajax = function (params) {
         if (!flag) {
             ajaxQueue.push(params);
             return;
@@ -32,19 +33,52 @@ let flag = false;
         })
     }
 
+
+    this.ajax = function (params) {
+
+
+        return axiosAjax(params)
+    }
+
 }).call(personal.ajax);
+
+
+function axiosAjax(params, isPromise = true) {
+    params.type = params.type || 'get';
+    // get/post 字段不一样！
+    const _data = params.type === 'get' ? {
+        params: params.data
+    } : {
+        data: params.data
+    };
+
+    const _config = Object.assign({
+        method: params.type,
+        url: params.url
+    }, _data);
+
+    return axios(_config).then((res = {}) => {
+        return isPromise ? res.data : void params.callback(res.data, 100, 'ok');
+    }).catch((err = {}) => {
+        return isPromise ? err : void params.callback(err, 0, 'err');
+    })
+}
 
 _timer(function () {
     if (ajaxQueue.length) {
         console.log('flag=>' + flag)
-        personal.ajax.ajax(ajaxQueue.shift());
+        personal.ajax._ajax(ajaxQueue.shift());
+
+
     }
 }, 100);
+
 
 setTimeout(function () {
     flag = true;
     console.log('------flag-----')
 }, 1500);
+
 
 /**
  *
