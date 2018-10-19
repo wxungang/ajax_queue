@@ -8,12 +8,12 @@ window.personal = window.personal || {};
 personal.ajax = personal.ajax || {};
 
 let ajaxQueue = [];
-let promiseQueue = {};
+let promiseQueue = [];
 let flag = false;
 
 (function () {
     let _this = this;
-
+    //传统的 callback 模式 队列实现很简单
     this._ajax = function (params) {
         if (!flag) {
             ajaxQueue.push(params);
@@ -34,10 +34,15 @@ let flag = false;
     }
 
 
-    this.ajax = function (params) {
+    this.axiosCallback = function (params) {
+        if (!flag) {
+            promiseQueue.push(params);
+
+        } else {
+            return axiosAjax(params, false)
+        }
 
 
-        return axiosAjax(params)
     }
 
 }).call(personal.ajax);
@@ -60,7 +65,7 @@ function axiosAjax(params, isPromise = true) {
     return axios(_config).then((res = {}) => {
         return isPromise ? res.data : void params.callback(res.data, 100, 'ok');
     }).catch((err = {}) => {
-        return isPromise ? err : void params.callback(err, 0, 'err');
+        return isPromise ? Promise.reject(err) : void params.callback(err, 0, 'err');
     })
 }
 
@@ -69,7 +74,7 @@ _timer(function () {
         console.log('flag=>' + flag)
         personal.ajax._ajax(ajaxQueue.shift());
 
-
+        personal.ajax.axiosCallback(promiseQueue.shift());
     }
 }, 100);
 
