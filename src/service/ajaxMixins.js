@@ -85,7 +85,8 @@ function axiosAjax(params, isPromise = true) {
  */
 let timerClose = _timer(function () {
     console.log('------timer-----')
-    if (promiseAjaxQueue.length) {
+    let _length = promiseAjaxQueue.length;
+    while (_length--) { //while(promiseAjaxQueue.length) 会死机。没法走出循环！
         console.log('flag=>' + flag);
 
         personal.ajax.ajax(promiseAjaxQueue.shift());
